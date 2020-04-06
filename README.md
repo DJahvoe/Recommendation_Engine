@@ -2,13 +2,21 @@
 
 ## _Workflow_
 
+!workflow.jpg
+
 ## _Perubahan Node Input dan Node Output_
 
 ### Mengubah input file location pada File Reader
 
+!local_filereader.jpg
+
 ### Mengubah input file location pada CSV to Spark
 
+!local_csvtospark.jpg
+
 ### Mengubah output file location pada CSV Writer
+
+!local_outputCSV.jpg
 
 # **Cross-Industry Standard Process for Data Mining**
 
@@ -24,12 +32,16 @@
 
 ### 05111740000130_movies.csv
 
+!05111740000130_movies.jpg
+
 - jumlah data pada 05111740000130_movies.csv sebanyak **270.000++ baris**
 - movieId: **id** dari film
 - title: **judul** dari film
 - genres: **genre** dari film
 
 ### 05111740000130_ratings.csv
+
+!05111740000130_ratings.jpg
 
 - jumlah data pada 05111740000130_ratings.csv sebanyak **1.000.000++ baris**
 - userId: **id user** yang memberikan rating terhadap film tertentu
@@ -43,19 +55,27 @@
 
 ### Proses construct required data:
 
+!build_current_user_profile.jpg
+
 - Pembuatan user profile custom: diperlukan pembuatan user baru untuk dilakukan uji coba recommendation system, yaitu dengan menambahkan kolom userID baru ke dalam list movie yang tersedia, lalu mengambil data rating movie yang telah ditonton oleh user dalam node **Ask User for Movie Ratings**, sedangkan sisa movie yang belum dirating akan masuk ke **no rating**
 
 - Pembagian partisi untuk training dan test set: setelah dilakukan load _05111740000130_ratings.csv_ menggunakan **CSV to Spark**, dilakukan partitioning menggunakan **Spark Partitioning** memisahkan antara training set (sebanyak 80%) dan test set (sebanyak 20%)
 
 ### Proses integrasi data:
 
+!integrasi_data.jpg
+
 - Sebelum data user di-training, dilakukan concatenation antara rating user yang telah tersedia dengan rating user yang baru menggunakan **Spark Concatenate**.
 
 ## _Modelling_
 
+!modelling.jpg
+
 ### Metode permodelan yang dipilih untuk mengolah data yang telah di-load menggunakan **Collaborative Filtering**, dengan asumsi data rating yang telah di-load sebelumnya dapat memberikan suatu _recommendation_ terhadap user profile yang baru dengan cara mencari kemiripan antara user profile yang baru dengan user profile yang lainnya. di dalam KNIME Environment, node yang dapat dimanfaatkan untuk mendapatkan fungsional berikut adalah **Spark Collaborative Filtering Learner (MLlib)**
 
 ## _Evaluation_
+
+!prediction_result.jpg
 
 Didapatkan hasil dari modelling menggunakan **Collaborative Filtering** sebagai berikut
 
@@ -64,11 +84,15 @@ Didapatkan hasil dari modelling menggunakan **Collaborative Filtering** sebagai 
 ### Penyimpanan hasil rekomendasi
 
 1. Setelah mendapatkan model, dilakukan prediksi data movie user baru tersebut menggunakan **Spark Predictor**
-2. Didapatkan hasil prediksi di dalam **Spark to Table**
-3. Hasil prediksi tersebut selanjutnya di-extract untuk mendapatkan hasil prediksi rating yang tertinggi untuk direkomendasikan ke user (data dapat berupa CSV melalui **CSV Writer**, maupun Interactive View melalui **Display Recommendation**).
+2. Didapatkan hasil prediksi di dalam **Spark to Table** <br>
+   !prediksi_user_baru.jpg
+3. Hasil prediksi tersebut selanjutnya di-extract untuk mendapatkan hasil prediksi rating yang tertinggi untuk direkomendasikan ke user (data dapat berupa CSV melalui **CSV Writer**, maupun Interactive View melalui **Display Recommendation**).<br>
+   !Display_Recommendation.jpg
 
 # **File Reader & CSV to Spark Comparison**
 
-- Dengan menggunakan **Timer Info** Load yang dilakukan **CSV to Spark** lebih cepat dibandingan **File Reader**
-- Kemungkinan penyebab dari hal tersebut adalah untuk data yang jumlahnya relatif besar (>1.000.000 baris) dan memiliki kolom yang sedikit (<1.000 kolom) maka kecepatan load **CSV to Spark akan lebih cepat**
-- Sedangkan untuk data yang jumlahnya relatif kecil (kurang lebih 5000 baris) dan memiliki kolom yang banyak (>1000) maka kecepatan load **File Reader akan lebih cepat**
+- Dengan menggunakan **Timer Info** Load yang dilakukan **CSV to Spark** lebih cepat dibandingan **File Reader** <br>
+!waktu_load_ratings
+- Kemungkinan penyebab dari hal tersebut adalah untuk data yang jumlahnya relatif besar (>1.000.000 baris) dan memiliki kolom yang sedikit (<1.000 kolom) maka kecepatan load **CSV to Spark akan lebih cepat** (Saat melakukan load file ratings.csv)<br>
+!waktu_load_movies
+- Sedangkan untuk data yang jumlahnya relatif kecil (kurang lebih 5000 baris) dan memiliki kolom yang banyak (>1000) maka kecepatan load **File Reader akan lebih cepat** (Saat melakukan load file movies.csv)
